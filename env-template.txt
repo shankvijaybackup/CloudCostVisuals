@@ -1,0 +1,59 @@
+# Cloud Asset Tracker - Environment Variables Template
+# Copy this file to .env.local and fill in your actual credentials
+
+# ===========================================
+# AWS Credentials
+# ===========================================
+# Get these from AWS IAM Console → Users → Security Credentials → Create access key
+AWS_ACCESS_KEY_ID=your_aws_access_key_id_here
+AWS_SECRET_ACCESS_KEY=your_aws_secret_access_key_here
+AWS_REGION=us-east-1
+
+# ===========================================
+# Azure Credentials
+# ===========================================
+# Get these from Azure Portal → Azure Active Directory → App registrations
+AZURE_CLIENT_ID=your_azure_application_client_id_here
+AZURE_CLIENT_SECRET=your_azure_client_secret_here
+AZURE_TENANT_ID=your_azure_tenant_id_here
+AZURE_SUBSCRIPTION_ID=your_azure_subscription_id_here
+
+# ===========================================
+# Google Cloud Platform (GCP) Credentials
+# ===========================================
+# Get project ID from GCP Console
+GCP_PROJECT_ID=your_gcp_project_id_here
+
+# Option 1: Path to service account key file
+GOOGLE_APPLICATION_CREDENTIALS=./gcp-key.json
+
+# Option 2: Or paste the JSON content directly in the app (recommended for development)
+# Download service account key from GCP → IAM & Admin → Service Accounts → Create Key → JSON
+
+# ===========================================
+# Application Settings
+# ===========================================
+# Next.js configuration
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+
+# Optional: Database connection (if you want to persist scan results)
+# DATABASE_URL=postgresql://username:password@localhost:5432/cloud_asset_tracker
+
+# Optional: Redis for caching
+REDIS_URL=redis://localhost:6379
+
+# ===========================================
+# Security Notes
+# ===========================================
+# 1. Never commit .env.local to version control
+# 2. Use read-only permissions whenever possible
+# 3. Consider using AWS IAM Roles instead of access keys in production
+# 4. Rotate credentials regularly
+# 5. Use different credentials for different environments
+
+# ===========================================
+# Required Permissions
+# ===========================================
+# AWS: ReadOnlyAccess + AWSBillingReadOnlyAccess
+# Azure: Reader + Cost Management Reader
+# GCP: Viewer + Billing Account Viewer

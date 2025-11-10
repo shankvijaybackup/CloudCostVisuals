@@ -1,0 +1,26 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model CloudScan {
+  id             Int      @id @default(autoincrement())
+  provider       String
+  region         String?
+  service        String?
+  resourceId     String?
+  costThisMonth  Float?   @default(0)
+  tags           Json?
+  connections    Json?
+  scanType       String?  @default("manual")
+  scannedAt      DateTime @default(now())
+
+  @@index([provider])
+  @@index([scannedAt])
+  @@index([region])
+  @@index([service])
+}
