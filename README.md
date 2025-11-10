@@ -1,26 +1,32 @@
 # Cloud Asset Tracker
 
-A comprehensive cloud asset management tool that supports both manual input and auto-detection of assets across AWS, Azure, and GCP. Built with Next.js, TypeScript, and TailwindCSS.
+A comprehensive multi-cloud asset management and cost visualization platform with database persistence, real-time trend analysis, and advanced filtering capabilities. Built with Next.js, TypeScript, Prisma, and PostgreSQL.
 
 ## Features
 
 ### Core Functionality
 - **Multi-cloud Support**: Track assets across AWS, Azure, and GCP
-- **Auto-Discovery**: Automatically scan cloud providers for asset inventory
+- **Database Persistence**: PostgreSQL with Prisma ORM for reliable data storage
+- **Auto-Discovery**: Automatically scan cloud providers for asset inventory and cost data
 - **Manual Asset Entry**: Simple form-based asset creation
-- **Cost Visualization**: Interactive charts showing costs by service and region
-- **Data Persistence**: Local storage for saving asset data
-- **CSV Export**: Export asset inventory and cost data to CSV format
-- **Asset Management**: Add, view, and delete cloud assets
-- **Responsive Design**: Works on desktop and mobile devices
-- **Modern UI**: Built with shadcn/ui components
-
-### Enhanced Features
+- **Advanced Cost Visualization**: Interactive trend charts with multi-provider filtering
 - **Real-time Cost Data**: Pull cost information from cloud provider APIs
+- **CSV Export**: Export asset inventory and cost data to CSV format
+- **Asset Management**: Add, view, edit, and delete cloud assets
+- **Responsive Design**: Works on desktop and mobile devices
+- **Modern UI**: Built with shadcn/ui components and TailwindCSS
+
+### Advanced Features
+- **Cost Trend Analysis**: Historical cost trends with month-over-month percentage changes
+- **Multi-provider Filtering**: Toggle between AWS, Azure, GCP in visualizations
+- **Time Range Selection**: View costs for 3, 6, or 12-month periods
+- **Performance Caching**: Redis caching for fast trend data loading
+- **Interactive Dashboards**: Bar charts, pie charts, and line charts for cost analysis
+- **Network Topology**: Visual asset relationship mapping with ReactFlow
 - **Asset Status Tracking**: Monitor running/stopped/terminated resources
 - **Provider-specific Styling**: Visual distinction between cloud providers
 - **Secure Credential Management**: Modal-based credential input
-- **Interactive Dashboards**: Bar charts and pie charts for cost analysis
+- **Scheduled Scanning**: Automated daily/weekly cloud asset scans
 
 ## Getting Started
 
@@ -28,13 +34,15 @@ A comprehensive cloud asset management tool that supports both manual input and 
 
 - Node.js 18+ installed
 - npm or yarn package manager
+- PostgreSQL database (local or cloud)
+- Redis (optional, for caching)
 - Cloud provider credentials (for auto-scanning feature)
 
 ### Installation
 
 1. Clone the repository:
 ```bash
-git clone <repository-url>
+git clone https://github.com/shankvijaybackup/CloudCostVisuals.git
 cd cloud-asset-tracker
 ```
 
@@ -43,20 +51,42 @@ cd cloud-asset-tracker
 npm install
 ```
 
-3. Run the development server:
+3. Set up environment variables:
+```bash
+cp env-template.txt .env.local
+# Edit .env.local with your database URL and cloud credentials
+```
+
+4. Set up the database:
+```bash
+# Update DATABASE_URL in .env.local with your PostgreSQL connection string
+npx prisma migrate dev --name init_cloud_scan
+npx prisma generate
+```
+
+5. Run the development server:
 ```bash
 npm run dev
 ```
 
-4. Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+6. Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 ## Usage
 
-### Auto-Scanning Cloud Assets
+### Database Setup & Scanning
 
-1. **AWS Scanning**: Click "Scan AWS" and provide your Access Key ID and Secret Access Key
-2. **Azure Scanning**: Click "Scan Azure" (placeholder - requires implementation)
-3. **GCP Scanning**: Click "Scan GCP" (placeholder - requires implementation)
+1. **Database Configuration**: Set up PostgreSQL and run migrations
+2. **Cloud Scanning**: Use "Scan All Clouds" for comprehensive multi-provider discovery
+3. **Scheduled Scans**: Automatic daily/weekly scans persist data to database
+
+### Cost Trend Analysis
+
+The advanced trend visualization provides:
+
+- **Multi-Provider Filtering**: Toggle AWS/Azure/GCP with button clicks
+- **Time Range Selection**: Choose 3, 6, or 12-month historical views
+- **Dual Metrics**: View both total costs and month-over-month percentage changes
+- **Performance Caching**: Redis caching ensures fast loading of trend data
 
 ### Manual Asset Entry
 
@@ -69,25 +99,63 @@ npm run dev
 After scanning, view interactive charts showing:
 - Cost breakdown by service (Bar chart)
 - Cost distribution by region (Pie chart)
+- Historical cost trends with filtering (Line chart)
 
 ### Data Management
 
 - **View Assets**: All assets appear in the enhanced table with status indicators
 - **Delete Assets**: Use the delete button to remove unwanted assets
 - **Export Data**: Click "Export CSV" to download your complete asset inventory
+- **Network Topology**: Visualize asset relationships with the interactive topology view
 
-## AWS Setup for Auto-Scanning
+## Technology Stack
 
-To use the AWS auto-scanning feature:
+### Frontend
+- **Next.js 16** - React framework with App Router
+- **TypeScript** - Type-safe JavaScript
+- **TailwindCSS** - Utility-first CSS framework
+- **shadcn/ui** - Modern component library
+- **Recharts** - Chart visualization library
+- **ReactFlow** - Interactive network diagrams
 
-1. Create an IAM user with the following permissions:
-   - `ec2:DescribeInstances`
-   - `ce:GetCostAndUsage`
-   - `resource-groups:SearchResources`
+### Backend & Database
+- **Next.js API Routes** - Serverless API endpoints
+- **Prisma ORM** - Database toolkit for TypeScript
+- **PostgreSQL** - Primary database for asset storage
+- **Redis** - Caching layer for performance
 
-2. Generate Access Key ID and Secret Access Key
-3. Ensure Cost Explorer API is enabled in your AWS account
-4. Use the credentials in the scanning modal
+### Cloud Integrations
+- **AWS SDK** - EC2, Cost Explorer, Resource Groups
+- **Azure SDK** - Compute, Cost Management, Resource Graph
+- **Google Cloud SDK** - Compute Engine, Asset Inventory, Billing
+
+### Infrastructure
+- **Node.js 18+** - Runtime environment
+- **npm** - Package management
+- **Git** - Version control
+
+## Architecture
+
+```
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   Next.js App   │────│  API Routes     │────│   Prisma ORM    │
+│   (Frontend)    │    │  (/api/*)       │    │                 │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+         │                       │                       │
+         │                       │                       │
+         ▼                       ▼                       ▼
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   ReactFlow     │    │ Cloud Connectors │    │   PostgreSQL    │
+│  (Topology)     │    │  (AWS/Azure/GCP) │    │   Database      │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+         │                       │                       │
+         │                       │                       │
+         ▼                       ▼                       ▼
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   Recharts      │    │   Scheduler      │    │     Redis       │
+│ (Trend Charts)  │    │ (Cron Jobs)      │    │   Cache         │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+```
 
 ## Data Model
 
